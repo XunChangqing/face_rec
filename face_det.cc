@@ -9,10 +9,21 @@ namespace masa_face_reg_rec {
 using namespace std;
 using namespace cv;
 
+const string kDefaultCascadeName =
+    "../data/haarcascades/haarcascade_frontalface_alt.xml";
+const string kDefaultNestedCascadeName =
+    "../data/haarcascades/haarcascade_eye_tree_eyeglasses.xml";
+
 bool FaceDetector::Init(string cascade_name, string nested_cascade_name) {
+  if (cascade_name.empty()) {
+    cascade_name = kDefaultCascadeName;
+  }
   if (!cascade_.load(cascade_name)) {
     cout << "Failed to load cascade!\n";
     return false;
+  }
+  if (nested_cascade_name.empty()) {
+    nested_cascade_name = kDefaultNestedCascadeName;
   }
   nested_cascade_.load(nested_cascade_name);
   return true;
@@ -33,7 +44,7 @@ vector<Rect> FaceDetector::Detect(Mat &img) {
   resize(gray, smallImg, smallImg.size(), 0, 0, INTER_LINEAR);
   equalizeHist(smallImg, smallImg);
 
-  t = (double)cvGetTickCount();
+  t = (double)getTickCount();
   cascade_.detectMultiScale(smallImg, faces, 1.1, 2,
                             0
                                 //|CV_HAAR_FIND_BIGGEST_OBJECT
@@ -41,28 +52,11 @@ vector<Rect> FaceDetector::Detect(Mat &img) {
                                 |
                                 CV_HAAR_SCALE_IMAGE,
                             Size(30, 30));
-  // if (tryflip) {
-  // flip(smallImg, smallImg, 1);
-  // cascade.detectMultiScale(smallImg, faces2, 1.1, 2,
-  // 0
-  ////|CV_HAAR_FIND_BIGGEST_OBJECT
-  ////|CV_HAAR_DO_ROUGH_SEARCH
-  //|
-  // CV_HAAR_SCALE_IMAGE,
-  // Size(30, 30));
-  // for (vector<Rect>::const_iterator r = faces2.begin(); r != faces2.end();
-  // r++) {
-  // faces.push_back(
-  // Rect(smallImg.cols - r->x - r->width, r->y, r->width, r->height));
-  //}
-  //}
-  t = (double)cvGetTickCount() - t;
+  t = (double)getTickCount() - t;
   // printf("detection time = %g ms\n",
   // t / ((double)cvGetTickFrequency() * 1000.));
   for (vector<Rect>::const_iterator r = faces.begin(); r != faces.end();
        r++, i++) {
-    // Mat smallImgROI;
-    // vector<Rect> nestedObjects;
     Point center;
     Scalar color = colors[i % 8];
     int radius;
@@ -80,24 +74,7 @@ vector<Rect> FaceDetector::Detect(Mat &img) {
                 color, 3, 8, 0);
     if (nested_cascade_.empty())
       continue;
-    // smallImgROI = smallImg(*r);
-    // nestedCascade.detectMultiScale(smallImgROI, nestedObjects, 1.1, 2,
-    // 0
-    ////|CV_HAAR_FIND_BIGGEST_OBJECT
-    ////|CV_HAAR_DO_ROUGH_SEARCH
-    ////|CV_HAAR_DO_CANNY_PRUNING
-    //|
-    // CV_HAAR_SCALE_IMAGE,
-    // Size(30, 30));
-    // for (vector<Rect>::const_iterator nr = nestedObjects.begin();
-    // nr != nestedObjects.end(); nr++) {
-    // center.x = cvRound((r->x + nr->x + nr->width * 0.5) * scale);
-    // center.y = cvRound((r->y + nr->y + nr->height * 0.5) * scale);
-    // radius = cvRound((nr->width + nr->height) * 0.25 * scale);
-    // circle(img, center, radius, color, 3, 8, 0);
-    //}
   }
-  //imshow("result", img);
   return faces;
 }
 }

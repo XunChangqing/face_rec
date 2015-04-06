@@ -16,10 +16,8 @@ using namespace masa_face_reg_rec;
 namespace fs = boost::filesystem;
 
 double scale = 2.0;
-string cascade_name = "../data/haarcascades/haarcascade_frontalface_alt.xml";
-string nested_cascade_name =
-    "../data/haarcascades/haarcascade_eye_tree_eyeglasses.xml";
 
+//read images from the person diretory, one subdirectory for each person
 void read_images(const string &dir_name, vector<Mat> &images,
                  vector<string> &label_names, vector<int> &labels) {
   fs::path person_dir(dir_name);
@@ -51,8 +49,7 @@ int main(int argc, const char *argv[]) {
     exit(1);
   }
   string person_dir = string(argv[1]);
-  // Get the path to your CSV.
-  // string fn_csv = string(argv[1]);
+
   // These vectors hold the images and corresponding labels.
   vector<Mat> images;
   // vector<string> image_names;
@@ -69,30 +66,6 @@ int main(int argc, const char *argv[]) {
                            "add more images to your data set!";
     CV_Error(CV_StsError, error_message);
   }
-  // Get the height from the first image. We'll need this
-  // later in code to reshape the images to their original
-  // size:
-  int height = images[0].rows;
-  cout << "height: " << height << endl;
-  // The following lines simply get the last images from
-  // your dataset and remove it from the vector. This is
-  // done, so that the training data (which we learn the
-  // cv::FaceRecognizer on) and the test data we test
-  // the model with, do not overlap.
-  // cout << images.size() << " " << labels.size() << endl;
-  // Mat testSample = images[images.size() - 1];
-  // int testLabel = labels[labels.size() - 1];
-  // images.pop_back();
-  // labels.pop_back();
-  // The following lines create an Eigenfaces model for
-  // face recognition and train it with the images and
-  // labels read from the given CSV file.
-  // This here is a full PCA, if you just want to keep
-  // 10 principal components (read Eigenfaces), then call
-  // the factory method like this:
-  //
-  //      cv::createEigenFaceRecognizer(10);
-  //
   // If you want to create a FaceRecognizer with a
   // confidennce threshold, call it with:
   //
@@ -101,26 +74,9 @@ int main(int argc, const char *argv[]) {
   Ptr<FaceRecognizer> model = createEigenFaceRecognizer();
   cout << images.size() << " " << labels.size() << endl;
   model->train(images, labels);
-  // cout << "After train!" << endl;
-  // The following line predicts the label of a given
-  // test image:
-  // int predictedLabel = model->predict(testSample);
-  //
-  // To get the confidence of a prediction call the model with:
-  //
-  // int predictedLabel = -1;
-  // double confidence = 0.0;
-  // model->predict(testSample, predictedLabel, confidence);
-  // cout << "After predict!" << endl;
-
-  // string result_message =
-  // format("Predicted class = %d / Actual class = %d / Confidence = %f.",
-  // predictedLabel, testLabel, confidence);
-  // cout << result_message << endl;
-  // cout << label_names[predictedLabel] << endl;
 
   FaceDetector face_det(scale);
-  if (!face_det.Init(cascade_name, nested_cascade_name)) {
+  if (!face_det.Init(string(), string())) {
     cerr << "Cannot init face detector!\n";
     exit(1);
   }
