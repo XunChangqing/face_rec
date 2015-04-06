@@ -30,22 +30,20 @@ bool FaceDetector::Init(string cascade_name, string nested_cascade_name) {
 }
 
 vector<Rect> FaceDetector::Detect(Mat &img) {
-  int i = 0;
-  double t = 0;
   vector<Rect> faces;
   const static Scalar colors[] = {CV_RGB(0, 0, 255),   CV_RGB(0, 128, 255),
                                   CV_RGB(0, 255, 255), CV_RGB(0, 255, 0),
                                   CV_RGB(255, 128, 0), CV_RGB(255, 255, 0),
                                   CV_RGB(255, 0, 0),   CV_RGB(255, 0, 255)};
   Mat gray,
-      smallImg(cvRound(img.rows / scale_), cvRound(img.cols / scale_), CV_8UC1);
+      small_img(round(img.rows / scale_), round(img.cols / scale_), CV_8UC1);
 
-  cvtColor(img, gray, CV_BGR2GRAY);
-  resize(gray, smallImg, smallImg.size(), 0, 0, INTER_LINEAR);
-  equalizeHist(smallImg, smallImg);
+  cvtColor(img, gray, COLOR_BGR2GRAY);
+  resize(gray, small_img, small_img.size(), 0, 0, INTER_LINEAR);
+  equalizeHist(small_img, small_img);
 
-  t = (double)getTickCount();
-  cascade_.detectMultiScale(smallImg, faces, 1.1, 2,
+  double t = (double)getTickCount();
+  cascade_.detectMultiScale(small_img, faces, 1.1, 2,
                             0
                                 //|CV_HAAR_FIND_BIGGEST_OBJECT
                                 //|CV_HAAR_DO_ROUGH_SEARCH
@@ -55,6 +53,7 @@ vector<Rect> FaceDetector::Detect(Mat &img) {
   t = (double)getTickCount() - t;
   // printf("detection time = %g ms\n",
   // t / ((double)cvGetTickFrequency() * 1000.));
+  int i=0;
   for (vector<Rect>::const_iterator r = faces.begin(); r != faces.end();
        r++, i++) {
     Point center;
@@ -63,14 +62,14 @@ vector<Rect> FaceDetector::Detect(Mat &img) {
 
     double aspect_ratio = (double)r->width / r->height;
     if (0.75 < aspect_ratio && aspect_ratio < 1.3) {
-      center.x = cvRound((r->x + r->width * 0.5) * scale_);
-      center.y = cvRound((r->y + r->height * 0.5) * scale_);
-      radius = cvRound((r->width + r->height) * 0.25 * scale_);
+      center.x = round((r->x + r->width * 0.5) * scale_);
+      center.y = round((r->y + r->height * 0.5) * scale_);
+      radius = round((r->width + r->height) * 0.25 * scale_);
       circle(img, center, radius, color, 3, 8, 0);
     } else
-      rectangle(img, cvPoint(cvRound(r->x * scale_), cvRound(r->y * scale_)),
-                cvPoint(cvRound((r->x + r->width - 1) * scale_),
-                        cvRound((r->y + r->height - 1) * scale_)),
+      rectangle(img, Point(round(r->x * scale_), round(r->y * scale_)),
+                cvPoint(round((r->x + r->width - 1) * scale_),
+                        round((r->y + r->height - 1) * scale_)),
                 color, 3, 8, 0);
     if (nested_cascade_.empty())
       continue;

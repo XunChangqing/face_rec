@@ -100,7 +100,7 @@ int main(int argc, const char *argv[]) {
       Mat resized_face_mat;
       resize(face_mat, resized_face_mat, images[0].size());
       // the faceregcognizer only accept grayscale image
-      cvtColor(resized_face_mat, resized_face_mat, CV_BGR2GRAY);
+      cvtColor(resized_face_mat, resized_face_mat, COLOR_BGR2GRAY);
 
       int predicted_label = -1;
       double confidence = 0.0;
@@ -119,39 +119,6 @@ int main(int argc, const char *argv[]) {
     if (waitKey(1) == 27)
       break;
   }
-  // Sometimes you'll need to get/set internal model data,
-  // which isn't exposed by the public cv::FaceRecognizer.
-  // Since each cv::FaceRecognizer is derived from a
-  // cv::Algorithm, you can query the data.
-  //
-  // First we'll use it to set the threshold of the FaceRecognizer
-  // to 0.0 without retraining the model. This can be useful if
-  // you are evaluating the model:
-  //
-  // model->set("threshold", 0.0);
-  //// Now the threshold of this model is set to 0.0. A prediction
-  //// now returns -1, as it's impossible to have a distance below
-  //// it
-  // predictedLabel = model->predict(testSample);
-  // cout << "Predicted class = " << predictedLabel << endl;
-  //// Here is how to get the eigenvalues of this Eigenfaces model:
-  // Mat eigenvalues = model->getMat("eigenvalues");
-  //// And we can do the same to display the Eigenvectors (read Eigenfaces):
-  // Mat W = model->getMat("eigenvectors");
-  //// From this we will display the (at most) first 10 Eigenfaces:
-  // for (int i = 0; i < min(10, W.cols); i++) {
-  // string msg = format("Eigenvalue #%d = %.5f", i, eigenvalues.at<double>(i));
-  // cout << msg << endl;
-  //// get eigenvector #i
-  // Mat ev = W.col(i).clone();
-  //// Reshape to original size & normalize to [0...255] for imshow.
-  // Mat grayscale = toGrayscale(ev.reshape(1, height));
-  //// Show the image & apply a Jet colormap for better sensing.
-  // Mat cgrayscale;
-  // applyColorMap(grayscale, cgrayscale, COLORMAP_JET);
-  // imshow(format("%d", i), cgrayscale);
-  //}
-  // waitKey(0);
 
   return 0;
 }
