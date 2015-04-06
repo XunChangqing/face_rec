@@ -30,6 +30,7 @@ void read_images(const string &dir_name, vector<Mat> &images,
       for (fs::directory_iterator face_iter(*person_iter);
            face_iter != fs::directory_iterator(); face_iter++) {
         if (fs::is_regular_file(*face_iter)) {
+          // the faceregcognizer only accept grayscale image
           images.push_back(
               imread(face_iter->path().string(), CV_LOAD_IMAGE_GRAYSCALE));
           // image_names.push_back((face_iter->path().string()));
@@ -78,11 +79,11 @@ int main(int argc, const char *argv[]) {
   // done, so that the training data (which we learn the
   // cv::FaceRecognizer on) and the test data we test
   // the model with, do not overlap.
-  //cout << images.size() << " " << labels.size() << endl;
-  //Mat testSample = images[images.size() - 1];
-  //int testLabel = labels[labels.size() - 1];
-  //images.pop_back();
-  //labels.pop_back();
+  // cout << images.size() << " " << labels.size() << endl;
+  // Mat testSample = images[images.size() - 1];
+  // int testLabel = labels[labels.size() - 1];
+  // images.pop_back();
+  // labels.pop_back();
   // The following lines create an Eigenfaces model for
   // face recognition and train it with the images and
   // labels read from the given CSV file.
@@ -100,23 +101,23 @@ int main(int argc, const char *argv[]) {
   Ptr<FaceRecognizer> model = createEigenFaceRecognizer();
   cout << images.size() << " " << labels.size() << endl;
   model->train(images, labels);
-  //cout << "After train!" << endl;
+  // cout << "After train!" << endl;
   // The following line predicts the label of a given
   // test image:
   // int predictedLabel = model->predict(testSample);
   //
   // To get the confidence of a prediction call the model with:
   //
-  //int predictedLabel = -1;
-  //double confidence = 0.0;
-  //model->predict(testSample, predictedLabel, confidence);
-  //cout << "After predict!" << endl;
+  // int predictedLabel = -1;
+  // double confidence = 0.0;
+  // model->predict(testSample, predictedLabel, confidence);
+  // cout << "After predict!" << endl;
 
-  //string result_message =
-      //format("Predicted class = %d / Actual class = %d / Confidence = %f.",
-             //predictedLabel, testLabel, confidence);
-  //cout << result_message << endl;
-  //cout << label_names[predictedLabel] << endl;
+  // string result_message =
+  // format("Predicted class = %d / Actual class = %d / Confidence = %f.",
+  // predictedLabel, testLabel, confidence);
+  // cout << result_message << endl;
+  // cout << label_names[predictedLabel] << endl;
 
   FaceDetector face_det(scale);
   if (!face_det.Init(cascade_name, nested_cascade_name)) {
@@ -142,6 +143,7 @@ int main(int argc, const char *argv[]) {
       Mat face_mat = frame(real_face_rect);
       Mat resized_face_mat;
       resize(face_mat, resized_face_mat, images[0].size());
+      // the faceregcognizer only accept grayscale image
       cvtColor(resized_face_mat, resized_face_mat, CV_BGR2GRAY);
 
       int predicted_label = -1;
