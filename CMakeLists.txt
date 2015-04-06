@@ -1,0 +1,11 @@
+cmake_minimum_required(VERSION 2.8)
+project( face_reg_rec )
+set(CMAKE_CXX_FLAGS                "-Wall -std=c++11")
+find_package( OpenCV REQUIRED )
+find_package(Boost 1.36.0 COMPONENTS filesystem system)
+include_directories( ${OpenCV_INCLUDE_DIRS} ${Boost_INCLUDE_DIRS})
+add_executable( face_reg face_reg.cc face_det.cc face_det.h)
+target_link_libraries( face_reg ${OpenCV_LIBS} ${Boost_LIBRARIES})
+
+add_executable( face_rec face_rec.cc face_det.cc face_det.h)
+target_link_libraries( face_rec ${OpenCV_LIBS} ${Boost_LIBRARIES})
